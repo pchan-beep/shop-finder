@@ -213,8 +213,9 @@ dialog.drawer::backdrop{background:rgba(10,15,20,.45)}
   <div class="search" role="search">
     <div class="fld"><label for="fDist">地區</label>
       <select id="fDist"></select></div>
-    <div class="fld"><label for="fMax">面積上限 <span id="maxOut" class="num"></span></label>
-      <input id="fMax" type="range" min="200" max="2000" step="50" value="2000"></div>
+    <div class="fld"><label for="fMin">面積 <span id="maxOut" class="num"></span></label>
+      <input id="fMin" type="range" min="0" max="2000" step="50" value="0" aria-label="面積下限">
+      <input id="fMax" type="range" min="200" max="2000" step="50" value="2000" aria-label="面積上限"></div>
     <div class="fld"><label for="fBudget">月租上限（HK$，留空＝唔限）</label>
       <input id="fBudget" type="number" inputmode="numeric" min="0" step="5000" placeholder="唔限"></div>
     <button class="go" id="goBtn">搵舖</button>
@@ -284,7 +285,7 @@ const REG = {hki:"港島",kln:"九龍",nt:"新界"};
 const ORDER = Object.keys(BENCH);
 
 const SRCS=[...new Set(DATA.map(x=>x.src))];
-const S = {dist:"全部", max:2000, budget:0, ground:true, noCk:true, favOnly:false, sort:"psf", src:Object.fromEntries(SRCS.map(s=>[s,true])), reg:{hki:true,kln:true,nt:true}};
+const S = {dist:"全部", min:0, max:2000, budget:0, ground:true, noCk:true, favOnly:false, sort:"psf", src:Object.fromEntries(SRCS.map(s=>[s,true])), reg:{hki:true,kln:true,nt:true}};
 let FAV = {}; // uid -> {st, note}
 
 DATA.forEach(x=>{x.psf=x.rent/x.sq; const b=BENCH[x.d]; x.vs=b? x.psf/b[3] : 1; x.reg=b?b[0]:"nt"; x.ph=x.ph||[]; x.ag=x.ag||"";});
@@ -298,10 +299,13 @@ $("fDist").innerHTML = `<option>全部</option>` + ["hki","kln","nt"].map(r=>`<o
 const bindTg=(cb,lab,key)=>{$(cb).addEventListener("change",e=>{S[key]=e.target.checked;$(lab).classList.toggle("on",e.target.checked);render()})};
 bindTg("fGround","tgGround","ground");bindTg("fNoCk","tgNoCk","noCk");bindTg("fFav","tgFav","favOnly");
 $("fDist").addEventListener("change",e=>{S.dist=e.target.value;render()});
-$("fMax").addEventListener("input",e=>{S.max=+e.target.value;$("maxOut").textContent=fmt(S.max)+"呎";render()});
+// 面積兩條拉桿：上面下限、下面上限；兩條唔可以交叉
+const sizeLbl=()=>{$("maxOut").textContent=(S.min?fmt(S.min)+"–":"≤ ")+fmt(S.max)+"呎"};
+$("fMin").addEventListener("input",e=>{S.min=Math.min(+e.target.value,S.max);e.target.value=S.min;sizeLbl();render()});
+$("fMax").addEventListener("input",e=>{S.max=Math.max(+e.target.value,S.min);e.target.value=S.max;sizeLbl();render()});
 $("fBudget").addEventListener("input",e=>{S.budget=+e.target.value||0;render()});
 $("goBtn").addEventListener("click",()=>{render();$("count").scrollIntoView({behavior:"smooth",block:"start"})});
-$("maxOut").textContent="2,000呎";
+sizeLbl();
 document.querySelectorAll(".sortbar button").forEach(b=>b.addEventListener("click",()=>{S.sort=b.dataset.s;document.querySelectorAll(".sortbar button").forEach(x=>x.setAttribute("aria-pressed",x===b));render()}));
 
 function sideBoxes(){
@@ -314,7 +318,7 @@ function sideBoxes(){
 function pass(x,ignoreDist){
   if(!ignoreDist && S.dist!=="全部" && x.d!==S.dist) return false;
   if(!S.src[x.src]||!S.reg[x.reg]) return false;
-  if(x.sq>S.max) return false;
+  if(x.sq>S.max || x.sq<S.min) return false;
   if(S.budget && x.rent>S.budget) return false;
   if(S.ground && x.fl!=="地舖") return false;
   if(S.noCk && x.ck) return false;
