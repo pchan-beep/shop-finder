@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>地舖格價 · 全港18區（自動更新）</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏪</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF1F3; --surface:#FFFFFF; --ink:#16212A; --muted:#5E6B75; --line:#D5DBE0;
+  --shutter:#48545D; --red:#C8102E; --redsoft:#FBE7EA;
+  --good:#1D7F52; --goodsoft:#E3F3EA; --warn:#B26A00; --warnsoft:#FBF0DC; --bad:#B42318; --badsoft:#FDE8E6;
+  --band:#C9D3DA; --chip:#F3F5F7;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12181D; --surface:#1B232A; --ink:#E7ECEF; --muted:#98A5AE; --line:#2C3740;
+  --shutter:#26313A; --red:#F0485F; --redsoft:#3A1C22;
+  --good:#4CC38A; --goodsoft:#16302A; --warn:#F0A63A; --warnsoft:#33291A; --bad:#F2766A; --badsoft:#3A1F1C;
+  --band:#3A4752; --chip:#222C34; color-scheme:dark;}}
+:root[data-theme="dark"]{
+  --bg:#12181D; --surface:#1B232A; --ink:#E7ECEF; --muted:#98A5AE; --line:#2C3740;
+  --shutter:#26313A; --red:#F0485F; --redsoft:#3A1C22;
+  --good:#4CC38A; --goodsoft:#16302A; --warn:#F0A63A; --warnsoft:#33291A; --bad:#F2766A; --badsoft:#3A1F1C;
+  --band:#3A4752; --chip:#222C34; color-scheme:dark;}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+a{color:inherit}
+.num{font-variant-numeric:tabular-nums}
+
+/* shutter header */
+.top{background:var(--shutter);color:#fff;position:relative;overflow:hidden}
+.top::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(180deg,rgba(255,255,255,.06) 0 2px,transparent 2px 11px);pointer-events:none}
+.top-in{position:relative;max-width:1180px;margin:0 auto;padding:22px 20px 84px}
+.hs{display:inline-block;font-size:12px;border-radius:999px;padding:1px 8px;margin:2px 2px 0 0;background:rgba(255,255,255,.14)}
+.hs.bad{background:#C8102E}
+.sign{display:inline-block;background:#fff;color:var(--red);border:3px solid var(--red);font-weight:900;font-size:28px;letter-spacing:.12em;padding:4px 14px 2px;line-height:1.2}
+.sub{margin:10px 0 0;color:rgba(255,255,255,.82);font-size:14px;max-width:62ch}
+
+/* search panel, Trip.com style */
+.panel{max-width:1180px;margin:-64px auto 0;padding:0 20px;position:relative;z-index:2}
+.search{background:var(--surface);border-radius:14px;box-shadow:0 8px 28px rgba(20,30,40,.14);display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:0;overflow:hidden;border:1px solid var(--line)}
+.fld{padding:12px 16px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}
+.fld label{font-size:12px;color:var(--muted)}
+.fld select,.fld input{border:0;background:transparent;font-size:17px;font-weight:700;padding:2px 0;outline:none;width:100%}
+.fld input[type=range]{padding:8px 0 0;accent-color:var(--red)}
+.go{background:var(--red);color:#fff;border:0;padding:0 26px;font-weight:700;font-size:16px;cursor:pointer}
+.go:focus-visible,.fld select:focus-visible,.fld input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #2F80ED;outline-offset:2px}
+.toggles{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+.tg{display:inline-flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px;cursor:pointer;user-select:none}
+.tg input{accent-color:var(--red);margin:0}
+.tg.on{border-color:var(--red);background:var(--redsoft)}
+
+/* body */
+.wrap{max-width:1180px;margin:18px auto 40px;padding:0 20px;display:grid;grid-template-columns:270px 1fr;gap:20px;align-items:start}
+main{min-width:0}
+aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:flex;flex-direction:column;gap:14px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px}
+.box h3{margin:0 0 8px;font-size:15px}
+.chk{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px;cursor:pointer}
+.chk input{accent-color:var(--red)}
+.chk .c{margin-left:auto;color:var(--muted);font-size:12px}
+.legend{font-size:12px;color:var(--muted);line-height:1.6}
+.legend b{color:var(--ink)}
+
+.sortbar{display:flex;gap:0;background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-bottom:12px}
+.sortbar button{flex:1;border:0;background:transparent;padding:11px 8px;cursor:pointer;font-size:14px;border-right:1px solid var(--line)}
+.sortbar button:last-child{border-right:0}
+.sortbar button[aria-pressed=true]{background:var(--ink);color:var(--surface);font-weight:700}
+.count{font-size:14px;color:var(--muted);margin:0 0 10px}
+.count b{color:var(--ink);font-size:18px}
+
+/* lowest-by-district strip */
+.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
+.strip button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 11px;text-align:left;cursor:pointer;min-width:96px}
+.strip button[aria-pressed=true]{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
+.strip .dn{font-size:13px;font-weight:700}
+.strip .dp{font-size:12px;color:var(--muted)}
+.strip .dp b{color:var(--good)}
+
+/* card */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:grid;grid-template-columns:96px 1fr 210px;margin-bottom:10px;overflow:hidden}
+.tag{background:var(--chip);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 6px;text-align:center;gap:4px}
+.tag .dist{font-weight:900;font-size:17px;line-height:1.2}
+.tag .area{font-size:12px;color:var(--muted)}
+.src{font-size:11px;font-weight:700;border-radius:4px;padding:1px 6px;color:#fff}
+.src.s0{background:#1F5FA8}.src.s1{background:#A97A1F}.src.s2{background:#24804F}.src.s3{background:#7A4FB3}.src.s4{background:#5A6B7B}
+.tt{font-size:13px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag{font-size:11px;color:var(--muted);line-height:1.3}
+.ph{display:flex;gap:6px;margin:0 0 8px}
+.ph img{width:132px;height:74px;object-fit:cover;border-radius:6px;background:var(--chip);border:1px solid var(--line)}
+.phlink{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-decoration:none;border:1px dashed var(--line);border-radius:6px;padding:4px 10px;margin:0 0 8px}
+.phlink:hover{color:var(--ink);border-color:var(--muted)}
+.mid{padding:12px 16px;min-width:0}
+.mid h4{margin:0;font-size:16px;line-height:1.35}
+.meta{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.pill{font-size:12px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);white-space:nowrap}
+.pill.g{background:var(--goodsoft);color:var(--good)}
+.pill.w{background:var(--warnsoft);color:var(--warn)}
+.pill.r{background:var(--badsoft);color:var(--bad)}
+
+/* the gauge: listing vs district band */
+.gauge{position:relative;height:28px;margin-top:4px}
+.gauge .rail{position:absolute;left:0;right:0;top:12px;height:4px;border-radius:2px;background:var(--line)}
+.gauge .bandz{position:absolute;top:9px;height:10px;border-radius:5px;background:var(--band)}
+.gauge .typ{position:absolute;top:6px;width:2px;height:16px;background:var(--muted)}
+.gauge .me{position:absolute;top:5px;width:18px;height:18px;margin-left:-9px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.gcap{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+
+.price{border-left:1px dashed var(--line);padding:12px 16px;display:flex;flex-direction:column;align-items:flex-end;justify-content:space-between;gap:8px;text-align:right}
+.rent{font-size:24px;font-weight:900;line-height:1.1}
+.rent small{font-size:13px;font-weight:500;color:var(--muted)}
+.psf{font-size:14px;color:var(--muted)}
+.psf b{font-size:16px}
+.acts{display:flex;gap:6px}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 12px;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn.pri{background:var(--red);border-color:var(--red);color:#fff;font-weight:700}
+.btn.star[aria-pressed=true]{background:var(--warnsoft);border-color:var(--warn);color:var(--warn);font-weight:700}
+.note{grid-column:1/-1;border-top:1px solid var(--line);padding:10px 16px;display:none;gap:8px;align-items:center;flex-wrap:wrap;background:var(--chip)}
+.card.fav .note{display:flex}
+.note select,.note input{border:1px solid var(--line);border-radius:6px;padding:5px 8px;background:var(--surface)}
+.note input{flex:1;min-width:180px}
+
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:10px;padding:26px;text-align:center;color:var(--muted)}
+.foot{max-width:1180px;margin:0 auto 30px;padding:0 20px;font-size:12px;color:var(--muted)}
+.foot a{color:var(--muted)}
+
+
+/* agents */
+.top-in{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px}
+.agbtn{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:8px;padding:8px 14px;font-weight:700;cursor:pointer}
+.agbtn:hover{background:rgba(255,255,255,.2)}
+dialog.drawer{border:0;padding:0;margin:0 0 0 auto;height:100%;max-height:100%;width:min(460px,100%);background:var(--surface);color:var(--ink);box-shadow:-8px 0 30px rgba(0,0,0,.25)}
+dialog.drawer::backdrop{background:rgba(10,15,20,.45)}
+.dhead{display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--surface);z-index:1}
+.dhead h2{margin:0;font-size:18px}
+.x{border:0;background:transparent;font-size:22px;cursor:pointer;line-height:1;padding:4px 8px}
+.dbody{padding:16px 18px calc(env(safe-area-inset-bottom,0px) + 24px)}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:10px;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:16px}
+.form label{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--muted)}
+.form input,.form textarea{border:1px solid var(--line);border-radius:6px;padding:7px 9px;background:var(--surface);font-size:14px;color:var(--ink)}
+.form textarea{min-height:56px;resize:vertical}
+.form .full{grid-column:1/-1}
+.dchips{display:flex;flex-wrap:wrap;gap:5px}
+.dchips label{flex-direction:row;align-items:center;gap:4px;font-size:12px;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:3px 9px;cursor:pointer}
+.dchips input{margin:0;accent-color:var(--red)}
+.frow{grid-column:1/-1;display:flex;gap:8px;justify-content:flex-end}
+.err{grid-column:1/-1;color:var(--bad);font-size:13px;margin:0}
+.agc{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px}
+.agc h4{margin:0;font-size:16px}
+.agc .co{font-size:13px;color:var(--muted)}
+.agc .ds{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}
+.agc p{margin:4px 0 0;font-size:13px;white-space:pre-wrap}
+.agc .row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.btn.sm{padding:5px 10px;font-size:13px}
+.btn.wa{background:#1f9d55;border-color:#1f9d55;color:#fff}
+.myag{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px;font-size:12px;color:var(--muted)}
+.myag a{font-size:12px;text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:2px 9px;color:var(--ink)}
+.myag a.w{border-color:#1f9d55;color:#1f9d55}
+.emptyag{color:var(--muted);font-size:14px;text-align:center;padding:16px;border:1px dashed var(--line);border-radius:10px}
+
+@media (max-width:900px){
+  .search{grid-template-columns:1fr 1fr}
+  .fld:nth-child(2){border-right:0}
+  .fld{border-bottom:1px solid var(--line)}
+  .go{grid-column:1/-1;padding:13px}
+  .wrap{grid-template-columns:1fr}
+  aside{position:static;flex-direction:row;gap:10px}
+  aside .box{flex:1;padding:10px 12px}
+  aside .legend{display:none}
+  .fld:nth-child(3){grid-column:1/-1;border-right:0}
+  .card{grid-template-columns:78px 1fr}
+  .price{grid-column:1/-1;border-left:0;border-top:1px dashed var(--line);flex-direction:row;align-items:center}
+}
+@media (prefers-reduced-motion:no-preference){.card{animation:in .25s ease-out both}@keyframes in{from{opacity:0;transform:translateY(4px)}}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in">
+  <div><div class="sign">地舖格價</div>
+  <p class="sub">中原、美聯、利嘉閣、28Hse、宅谷 舖位租盤每日自動更新。每間舖嘅呎租會對住該區典型呎租範圍，一眼睇到抵唔抵。</p>
+  <p class="sub" id="upd"></p></div>
+  <button class="agbtn" id="agOpen">我嘅代理 <span id="agN" class="num"></span></button>
+</div></header>
+
+<dialog class="drawer" id="agDlg" aria-labelledby="agTitle">
+  <div class="dhead"><h2 id="agTitle">我嘅相熟代理</h2><button class="x" id="agClose" aria-label="關閉">×</button></div>
+  <div class="dbody">
+    <form class="form" id="agForm" autocomplete="off">
+      <label>姓名 *<input name="name" required placeholder="例如：陳生 Roger"></label>
+      <label>地產公司<input name="co" placeholder="例如：利嘉閣工商舖"></label>
+      <label>電話<input name="tel" inputmode="tel" placeholder="9123 4567"></label>
+      <label>WhatsApp（唔同電話先填）<input name="wa" inputmode="tel" placeholder="同電話就留空"></label>
+      <label>牌照號碼<input name="lic" placeholder="E-123456 / S-123456"></label>
+      <label>電郵<input name="email" type="email" placeholder="選填"></label>
+      <div class="full"><label style="margin-bottom:4px">負責地區（揀咗嘅區，舖卡會顯示佢）</label><div class="dchips" id="agDs"></div></div>
+      <label class="full">備註<textarea name="note" placeholder="例如：熟元朗教育路一帶、肯同業主傾減租、回覆快"></textarea></label>
+      <p class="err" id="agErr" hidden></p>
+      <div class="frow"><button type="button" class="btn" id="agCancel" hidden>取消編輯</button><button type="submit" class="btn pri" id="agSave">加入代理</button></div>
+    </form>
+    <div class="frow" style="margin:-6px 0 12px"><button type="button" class="btn sm" id="agExp">匯出名冊</button><label class="btn sm" style="cursor:pointer">匯入名冊<input type="file" id="agImp" accept=".json,application/json" hidden></label></div>
+    <div id="agList"></div>
+  </div>
+</dialog>
+
+<div class="panel">
+  <div class="search" role="search">
+    <div class="fld"><label for="fDist">地區</label>
+      <select id="fDist"></select></div>
+    <div class="fld"><label for="fMax">面積上限 <span id="maxOut" class="num"></span></label>
+      <input id="fMax" type="range" min="200" max="2000" step="50" value="2000"></div>
+    <div class="fld"><label for="fBudget">月租上限（HK$，留空＝唔限）</label>
+      <input id="fBudget" type="number" inputmode="numeric" min="0" step="5000" placeholder="唔限"></div>
+    <button class="go" id="goBtn">搵舖</button>
+  </div>
+  <div class="toggles">
+    <label class="tg on" id="tgGround"><input type="checkbox" id="fGround" checked> 只睇地舖</label>
+    <label class="tg on" id="tgNoCk"><input type="checkbox" id="fNoCk" checked> 唔要閣樓舖</label>
+    <label class="tg" id="tgFav"><input type="checkbox" id="fFav"> 只睇已收藏</label>
+  </div>
+</div>
+
+<div class="wrap">
+  <aside>
+    <div class="box"><h3>地產</h3><div id="srcBox"></div></div>
+    <div class="box"><h3>區域</h3><div id="regBox"></div></div>
+    <div class="box legend">
+      <h3>點睇呎租條尺</h3>
+      灰色闊條係該區地舖<b>典型呎租範圍</b>，直線係<b>典型值</b>。圓點係呢間舖嘅呎租：
+      <span style="color:var(--good)">綠＝低過典型</span>，
+      <span style="color:var(--warn)">橙＝高過典型</span>，
+      <span style="color:var(--bad)">紅＝超出範圍</span>。
+    </div>
+  </aside>
+
+  <main>
+    <div class="sortbar" role="group" aria-label="排序">
+      <button data-s="psf" aria-pressed="true">呎租最抵</button>
+      <button data-s="rent" aria-pressed="false">月租最平</button>
+      <button data-s="vs" aria-pressed="false">對比區內最抵</button>
+      <button data-s="new" aria-pressed="false">最新上架</button>
+    </div>
+    <div class="strip" id="strip" aria-label="各區最低呎租"></div>
+    <p class="count" id="count"></p>
+    <div id="list"></div>
+  </main>
+</div>
+
+<footer class="foot">
+  <p id="stamp"></p>
+  <p>面積及叫價以地產網站標示為準（未經核實），落實前請向代理確認實用面積、閣樓、牌照同租約條款。區內典型呎租為估算參考。收藏、備註同代理資料只儲存喺你自己部機嘅瀏覽器。想睇更多盤：
+  <a href="https://oir.centanet.com/en/all/retail/" target="_blank" rel="noopener">中原工商舖</a>、
+  <a href="https://www.midlandici.com.hk/zh-hk/listing/rent/shop" target="_blank" rel="noopener">美聯工商舖</a>、
+  <a href="https://www.28hse.com/en/rent/shop" target="_blank" rel="noopener">28Hse</a>、
+  <a href="https://cir.ricacorp.com/" target="_blank" rel="noopener">利嘉閣工商舖</a>、
+  <a href="https://www.property.hk/rent/t3/" target="_blank" rel="noopener">宅谷</a>。利嘉閣同宅谷部分盤冇寫樓層（顯示「未註明」），剔走「只睇地舖」先會見到。</p>
+</footer>
+
+<script>
+(function(){
+  var s=document.createElement('script');
+  s.src='data.js?t='+Date.now();
+  s.onload=function(){ start(); };
+  s.onerror=function(){ document.getElementById('list').innerHTML='<div class="empty">讀唔到 data.js。請確認 data.js 同呢個 index.html 放喺同一個資料夾。</div>'; };
+  document.head.appendChild(s);
+})();
+function start(){
+
+const SD = window.SHOP_DATA || {listings:[],sources:{},updated:""};
+const DATA = SD.listings || [];
+const ASOF = (SD.updated||"").slice(0,10);
+const DAY = 864e5;
+const isNew = x => x.first && (Date.parse(ASOF) - Date.parse(x.first)) <= 3*DAY;
+const isDrop = x => x.prev && x.prev > x.rent && (!x.prev_at || (Date.parse(ASOF) - Date.parse(x.prev_at)) <= 14*DAY);
+// district: [region, low, high, typical] $/ft²
+const BENCH = {"油尖旺":["kln",75,260,130],"灣仔":["hki",60,200,110],"中西區":["hki",55,180,90],"荃灣":["nt",42,110,65],"大埔":["nt",38,105,58],"東區":["hki",38,95,55],"九龍城":["kln",38,95,55],"沙田":["nt",38,92,55],"觀塘":["kln",38,90,52],"元朗":["nt",35,88,50],"南區":["hki",32,80,48],"離島":["nt",28,75,45],"深水埗":["kln",30,72,45],"北區":["nt",28,70,44],"西貢":["nt",28,72,44],"黃大仙":["kln",30,65,42],"葵青":["nt",30,66,42],"屯門":["nt",25,62,40]};
+const REG = {hki:"港島",kln:"九龍",nt:"新界"};
+const ORDER = Object.keys(BENCH);
+
+const SRCS=[...new Set(DATA.map(x=>x.src))];
+const S = {dist:"全部", max:2000, budget:0, ground:true, noCk:true, favOnly:false, sort:"psf", src:Object.fromEntries(SRCS.map(s=>[s,true])), reg:{hki:true,kln:true,nt:true}};
+let FAV = {}; // uid -> {st, note}
+
+DATA.forEach(x=>{x.psf=x.rent/x.sq; const b=BENCH[x.d]; x.vs=b? x.psf/b[3] : 1; x.reg=b?b[0]:"nt"; x.ph=x.ph||[]; x.ag=x.ag||"";});
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt=n=>n.toLocaleString("en-HK");
+const dt=s=>s?s.split("-").reverse().join("/"):"";
+
+// controls
+$("fDist").innerHTML = `<option>全部</option>` + ["hki","kln","nt"].map(r=>`<optgroup label="${REG[r]}">`+ORDER.filter(d=>BENCH[d][0]===r).map(d=>{const n=DATA.filter(x=>x.d===d).length;return `<option value="${d}">${d}${n?"":"（未有盤）"}</option>`}).join("")+`</optgroup>`).join("");
+const bindTg=(cb,lab,key)=>{$(cb).addEventListener("change",e=>{S[key]=e.target.checked;$(lab).classList.toggle("on",e.target.checked);render()})};
+bindTg("fGround","tgGround","ground");bindTg("fNoCk","tgNoCk","noCk");bindTg("fFav","tgFav","favOnly");
+$("fDist").addEventListener("change",e=>{S.dist=e.target.value;render()});
+$("fMax").addEventListener("input",e=>{S.max=+e.target.value;$("maxOut").textContent=fmt(S.max)+"呎";render()});
+$("fBudget").addEventListener("input",e=>{S.budget=+e.target.value||0;render()});
+$("goBtn").addEventListener("click",()=>{render();$("count").scrollIntoView({behavior:"smooth",block:"start"})});
+$("maxOut").textContent="2,000呎";
+document.querySelectorAll(".sortbar button").forEach(b=>b.addEventListener("click",()=>{S.sort=b.dataset.s;document.querySelectorAll(".sortbar button").forEach(x=>x.setAttribute("aria-pressed",x===b));render()}));
+
+function sideBoxes(){
+  $("srcBox").innerHTML=Object.keys(S.src).map(s=>`<label class="chk"><input type="checkbox" data-src="${s}" ${S.src[s]?"checked":""}> ${s}<span class="c">${DATA.filter(x=>x.src===s).length} 個盤</span></label>`).join("");
+  $("regBox").innerHTML=["hki","kln","nt"].map(r=>`<label class="chk"><input type="checkbox" data-reg="${r}" ${S.reg[r]?"checked":""}> ${REG[r]}<span class="c">${DATA.filter(x=>x.reg===r).length}</span></label>`).join("");
+  document.querySelectorAll("[data-src]").forEach(i=>i.addEventListener("change",e=>{S.src[i.dataset.src]=e.target.checked;render()}));
+  document.querySelectorAll("[data-reg]").forEach(i=>i.addEventListener("change",e=>{S.reg[i.dataset.reg]=e.target.checked;render()}));
+}
+
+function pass(x,ignoreDist){
+  if(!ignoreDist && S.dist!=="全部" && x.d!==S.dist) return false;
+  if(!S.src[x.src]||!S.reg[x.reg]) return false;
+  if(x.sq>S.max) return false;
+  if(S.budget && x.rent>S.budget) return false;
+  if(S.ground && x.fl!=="地舖") return false;
+  if(S.noCk && x.ck) return false;
+  if(S.favOnly && !FAV[x.uid]) return false;
+  return true;
+}
+
+function verdict(x){
+  const b=BENCH[x.d]; if(!b) return ["","—"];
+  if(x.psf>b[2]) return ["r","超出區內範圍"];
+  if(x.psf>b[3]*1.1) return ["w","高過區內典型"];
+  if(x.psf<b[3]*0.9) return ["g","低過區內典型"];
+  return ["","貼近區內典型"];
+}
+
+function gauge(x){
+  const b=BENCH[x.d]; if(!b) return ""; const MAX=Math.max(b[2]*1.15,x.psf*1.08);
+  const P=v=>Math.min(v/MAX*100,100);
+  const col={g:"var(--good)",w:"var(--warn)",r:"var(--bad)","":"var(--muted)"}[verdict(x)[0]];
+  return `<div class="gauge" aria-hidden="true"><div class="rail"></div>
+    <div class="bandz" style="left:${P(b[1])}%;width:${P(b[2])-P(b[1])}%"></div>
+    <div class="typ" style="left:${P(b[3])}%"></div>
+    <div class="me" style="left:${P(x.psf)}%;background:${col}"></div></div>
+    <div class="gcap num"><span>${x.d}典型 $${b[1]}–${b[2]}/呎，中位 ~$${b[3]}</span><span>呢間 $${x.psf.toFixed(0)}</span></div>`;
+}
+
+function card(x){
+  const [vc,vt]=verdict(x); const f=FAV[x.uid];
+  const pills=[isNew(x)?`<span class="pill r">新盤</span>`:"", isDrop(x)?`<span class="pill g">減價 原$${fmt(x.prev)}</span>`:"", `<span class="pill">${x.fl}</span>`, x.ck?`<span class="pill w">有閣樓</span>`:"", `<span class="pill ${vc}">${vt}</span>`, (x.dt?`<span class="pill">放盤 ${dt(x.dt)}</span>`:`<span class="pill">放盤日期未列明</span>`), `<span class="pill">編號 ${x.id}</span>`].join("");
+  return `<article class="card${f?" fav":""}" data-id="${x.uid}">
+    <div class="tag"><div class="dist">${x.d}</div><div class="area">${x.a}</div><span class="src s${SRCS.indexOf(x.src)%5}">${x.src}</span>${x.ag?`<div class="ag">${x.ag}</div>`:""}</div>
+    <div class="mid"><h4>${esc(x.a)}${esc(x.st)}</h4>${x.tt?`<div class="tt">${esc(x.tt)}</div>`:""}<div class="meta">${pills}</div>${photos(x)}${gauge(x)}${myAgents(x)}</div>
+    <div class="price">
+      <div><div class="rent num">$${fmt(x.rent)}<small> /月</small></div>
+      <div class="psf num">${x.at&&x.at!=="未註明"?x.at+" ":"約 "}${fmt(x.sq)} 呎 · <b>$${x.psf.toFixed(1)}</b>/呎</div></div>
+      <div class="acts"><button class="btn star" aria-pressed="${!!f}" data-fav="${x.uid}">${f?"已收藏":"收藏"}</button>
+      <a class="btn pri" href="${x.url}" target="_blank" rel="noopener">睇原盤</a></div>
+    </div>
+    <div class="note"><label>進度 <select data-st="${x.uid}">${["想睇","已約睇","已睇","唔啱"].map(o=>`<option ${f&&f.st===o?"selected":""}>${o}</option>`).join("")}</select></label>
+      <input data-note="${x.uid}" placeholder="備註，例如：舖面闊、有去水、業主肯減到幾多" value="${f&&f.note?f.note.replace(/"/g,"&quot;"):""}"></div>
+  </article>`;
+}
+
+function photos(x){
+  const link=`<a class="phlink" href="${x.url}" target="_blank" rel="noopener">📷 喺原盤睇相</a>`;
+  if(!x.ph||!x.ph.length) return link;
+  return `<div class="ph">${x.ph.slice(0,2).map(u=>`<img src="${u}" alt="${x.a}${x.st} 相片" loading="lazy" referrerpolicy="no-referrer" onerror="var p=this.parentNode;if(p&&p.parentNode&&p.dataset.fb)p.outerHTML=p.dataset.fb">`).join("")}</div>`.replace('<div class="ph">',`<div class="ph" data-fb='${link.replace(/'/g,"&#39;")}'>`);
+}
+
+function strip(){
+  const by={}; DATA.filter(x=>pass(x,true)).forEach(x=>{(by[x.d]=by[x.d]||[]).push(x)});
+  const ds=ORDER.filter(d=>by[d]);
+  $("strip").innerHTML=`<button aria-pressed="${S.dist==="全部"}" data-d="全部"><div class="dn">全部地區</div><div class="dp">${ds.length} 區有盤</div></button>`+
+   ds.map(d=>{const m=Math.min(...by[d].map(x=>x.psf));return `<button aria-pressed="${S.dist===d}" data-d="${d}"><div class="dn">${d}</div><div class="dp">最平 <b class="num">$${m.toFixed(0)}</b>/呎 · ${by[d].length}間</div></button>`}).join("");
+  $("strip").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{S.dist=b.dataset.d;$("fDist").value=S.dist;render()}));
+}
+
+function render(){
+  strip();
+  let L=DATA.filter(x=>pass(x));
+  const k={psf:x=>x.psf,rent:x=>x.rent,vs:x=>x.vs,new:x=>-(Date.parse(x.first||x.dt||"2000-01-01")||0)}[S.sort];
+  L.sort((a,b)=>k(a)-k(b));
+  $("count").innerHTML=`搵到 <b class="num">${L.length}</b> 間合條件嘅舖`+(S.dist!=="全部"?`（${S.dist}）`:"");
+  if(!L.length){
+    const none = S.dist!=="全部" && !DATA.some(x=>x.d===S.dist);
+    $("list").innerHTML=`<div class="empty">${none?`呢次未搵到${S.dist}嘅放租盤。可以喺 config.json 加呢區，或者直接去地產網站搜尋。`:"冇舖符合而家嘅條件。試下放寬面積、月租，或者剔走「只睇地舖」／「唔要閣樓舖」。"}</div>`;
+    return;
+  }
+  $("list").innerHTML=L.map(card).join("");
+  $("list").querySelectorAll("[data-fav]").forEach(b=>b.addEventListener("click",()=>toggleFav(b.dataset.fav)));
+  $("list").querySelectorAll("[data-st]").forEach(s=>s.addEventListener("change",()=>{FAV[s.dataset.st].st=s.value;saveFav()}));
+  $("list").querySelectorAll("[data-note]").forEach(i=>i.addEventListener("change",()=>{FAV[i.dataset.note].note=i.value;saveFav()}));
+}
+
+function toggleFav(id){ if(FAV[id]) delete FAV[id]; else FAV[id]={st:"想睇",note:""}; saveFav(); render(); }
+
+// persistence: 每個人自己瀏覽器
+function saveFav(){
+  try{localStorage.setItem("shopfav",JSON.stringify(FAV))}catch(e){}
+}
+try{FAV=JSON.parse(localStorage.getItem("shopfav")||"{}")||{}}catch(e){FAV={}}
+
+
+// ---------- my agents ----------
+let AG=[]; let editing=null;
+try{AG=JSON.parse(localStorage.getItem("myagents")||"[]")||[]}catch(e){AG=[]}
+const digits=s=>String(s||"").replace(/\D/g,"");
+const waNum=a=>{const n=digits(a.wa||a.tel);return n?(n.length===8?"852"+n:n):""};
+$("agDs").innerHTML=["全港",...ORDER].map(d=>`<label><input type="checkbox" value="${d}">${d}</label>`).join("");
+function saveAg(){
+  try{localStorage.setItem("myagents",JSON.stringify(AG))}catch(e){}
+  renderAg(); render();
+}
+function agFor(d){return AG.filter(a=>(a.ds||[]).includes(d)||(a.ds||[]).includes("全港"))}
+function renderAg(){
+  $("agN").textContent=AG.length?`(${AG.length})`:"";
+  if(!AG.length){$("agList").innerHTML=`<div class="emptyag">未有代理。喺上面填資料，撳「加入代理」。揀咗負責地區之後，嗰區嘅舖卡會直接顯示佢嘅電話同 WhatsApp。</div>`;return}
+  $("agList").innerHTML=AG.map((a,i)=>`<div class="agc">
+    <h4>${esc(a.name)}</h4><div class="co">${esc(a.co)}${a.lic?" · 牌照 "+esc(a.lic):""}</div>
+    ${(a.ds||[]).length?`<div class="ds">${a.ds.map(d=>`<span class="pill">${esc(d)}</span>`).join("")}</div>`:""}
+    ${a.note?`<p>${esc(a.note)}</p>`:""}
+    <div class="row">
+      ${a.tel?`<a class="btn sm" href="tel:${digits(a.tel)}">📞 ${esc(a.tel)}</a>`:""}
+      ${waNum(a)?`<a class="btn sm wa" href="https://wa.me/${waNum(a)}" target="_blank" rel="noopener">WhatsApp</a>`:""}
+      ${a.email?`<a class="btn sm" href="mailto:${esc(a.email)}">電郵</a>`:""}
+      <button class="btn sm" data-ed="${i}">編輯</button><button class="btn sm" data-del="${i}">刪除</button>
+    </div></div>`).join("");
+  $("agList").querySelectorAll("[data-ed]").forEach(b=>b.onclick=()=>startEdit(+b.dataset.ed));
+  $("agList").querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{const a=AG[+b.dataset.del];if(confirm(`刪除代理「${a.name}」？`)){AG.splice(+b.dataset.del,1);if(editing===+b.dataset.del)resetForm();saveAg()}});
+}
+function resetForm(){editing=null;$("agForm").reset();$("agSave").textContent="加入代理";$("agCancel").hidden=true;$("agErr").hidden=true}
+function startEdit(i){
+  const a=AG[i],f=$("agForm");editing=i;
+  ["name","co","tel","wa","lic","email","note"].forEach(k=>f.elements[k].value=a[k]||"");
+  $("agDs").querySelectorAll("input").forEach(c=>c.checked=(a.ds||[]).includes(c.value));
+  $("agSave").textContent="儲存修改";$("agCancel").hidden=false;f.scrollIntoView({behavior:"smooth"});f.elements.name.focus();
+}
+$("agForm").addEventListener("submit",e=>{
+  e.preventDefault();const f=e.target;
+  const a={name:f.elements.name.value.trim(),co:f.elements.co.value.trim(),tel:f.elements.tel.value.trim(),wa:f.elements.wa.value.trim(),lic:f.elements.lic.value.trim(),email:f.elements.email.value.trim(),note:f.elements.note.value.trim(),ds:[...$("agDs").querySelectorAll("input:checked")].map(c=>c.value)};
+  if(!a.name){$("agErr").textContent="請填姓名。";$("agErr").hidden=false;return}
+  if(!a.tel&&!a.wa&&!a.email){$("agErr").textContent="請最少填一個聯絡方法（電話、WhatsApp 或電郵）。";$("agErr").hidden=false;return}
+  if(editing!==null) AG[editing]=a; else AG.push(a);
+  resetForm();saveAg();
+});
+$("agCancel").onclick=resetForm;
+$("agExp").onclick=()=>{const b=new Blob([JSON.stringify(AG,null,1)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="我嘅代理名冊.json";document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
+$("agImp").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(s=>{try{const L=JSON.parse(s);if(!Array.isArray(L))throw 0;let n=0;L.forEach(a=>{if(a&&a.name&&!AG.some(b=>b.name===a.name&&(b.tel||"")===(a.tel||""))){AG.push({name:String(a.name),co:a.co||"",tel:a.tel||"",wa:a.wa||"",lic:a.lic||"",email:a.email||"",note:a.note||"",ds:Array.isArray(a.ds)?a.ds:[]});n++}});saveAg();alert(`匯入咗 ${n} 個代理`)}catch(_){alert("檔案格式唔啱")}e.target.value=""})};
+$("agOpen").onclick=()=>{renderAg();$("agDlg").showModal()};
+$("agClose").onclick=()=>$("agDlg").close();
+$("agDlg").addEventListener("click",e=>{if(e.target===$("agDlg"))$("agDlg").close()});
+function myAgents(x){
+  const L=agFor(x.d); if(!L.length) return "";
+  return `<div class="myag">相熟代理：${L.map(a=>`${esc(a.name)}${a.co?"（"+esc(a.co)+"）":""} ${a.tel?`<a href="tel:${digits(a.tel)}">📞 ${esc(a.tel)}</a>`:""}${waNum(a)?`<a class="w" href="https://wa.me/${waNum(a)}?text=${encodeURIComponent(`你好，我想問${x.a}${x.st}（${x.src} 編號 ${x.id}，月租 $${fmt(x.rent)}）仲有冇，有冇其他類似嘅舖？`)}" target="_blank" rel="noopener">WhatsApp 問呢間</a>`:""}`).join("　")}</div>`;
+}
+
+sideBoxes(); renderAg(); render();
+$("upd").innerHTML=`最後更新 <b>${esc(SD.updated||"—")}</b>　`+Object.entries(SD.sources||{}).map(([k,v])=>`<span class="hs ${v.ok?"ok":"bad"}">${esc(k)} ${v.ok?v.count+" 盤":"未更新（上次成功 "+esc(v.last_ok||"—")+"）"}</span>`).join(" ");
+$("stamp").textContent=`共 ${DATA.length} 個在架租盤（${SRCS.map(s=>s+" "+DATA.filter(x=>x.src===s).length).join("、")}）。「新盤」＝3日內新上架；「減價」＝14日內減過價。有啲盤只有建築面積，卡上有註明。`;
+
+
+
+}
+</script>
+</body>
+</html>
