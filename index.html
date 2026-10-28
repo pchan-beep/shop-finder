@@ -12,7 +12,7 @@
   --bg:#EEF1F3; --surface:#FFFFFF; --ink:#16212A; --muted:#5E6B75; --line:#D5DBE0;
   --shutter:#48545D; --red:#C8102E; --redsoft:#FBE7EA;
   --good:#1D7F52; --goodsoft:#E3F3EA; --warn:#B26A00; --warnsoft:#FBF0DC; --bad:#B42318; --badsoft:#FDE8E6;
-  --band:#C9D3DA; --chip:#F3F5F7;
+  --band:#C9D3DA; --chip:#F3F5F7; --info:#1F5FA8; --infosoft:#E6EEF8;
   color-scheme:light;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
@@ -21,12 +21,12 @@
   --bg:#12181D; --surface:#1B232A; --ink:#E7ECEF; --muted:#98A5AE; --line:#2C3740;
   --shutter:#26313A; --red:#F0485F; --redsoft:#3A1C22;
   --good:#4CC38A; --goodsoft:#16302A; --warn:#F0A63A; --warnsoft:#33291A; --bad:#F2766A; --badsoft:#3A1F1C;
-  --band:#3A4752; --chip:#222C34; color-scheme:dark;}}
+  --band:#3A4752; --chip:#222C34; --info:#7FB0EE; --infosoft:#1A2A3E; color-scheme:dark;}}
 :root[data-theme="dark"]{
   --bg:#12181D; --surface:#1B232A; --ink:#E7ECEF; --muted:#98A5AE; --line:#2C3740;
   --shutter:#26313A; --red:#F0485F; --redsoft:#3A1C22;
   --good:#4CC38A; --goodsoft:#16302A; --warn:#F0A63A; --warnsoft:#33291A; --bad:#F2766A; --badsoft:#3A1F1C;
-  --band:#3A4752; --chip:#222C34; color-scheme:dark;}
+  --band:#3A4752; --chip:#222C34; --info:#7FB0EE; --infosoft:#1A2A3E; color-scheme:dark;}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang HK","Microsoft JhengHei",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
@@ -45,7 +45,7 @@ a{color:inherit}
 
 /* search panel, Trip.com style */
 .panel{max-width:1180px;margin:-64px auto 0;padding:0 20px;position:relative;z-index:2}
-.search{background:var(--surface);border-radius:14px;box-shadow:0 8px 28px rgba(20,30,40,.14);display:grid;grid-template-columns:1.3fr 1fr 1fr auto;gap:0;overflow:hidden;border:1px solid var(--line)}
+.search{background:var(--surface);border-radius:14px;box-shadow:0 8px 28px rgba(20,30,40,.14);display:grid;grid-template-columns:1.2fr 1fr auto;gap:0;overflow:hidden;border:1px solid var(--line)}
 .fld{padding:12px 16px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:2px;min-width:0}
 .fld label{font-size:12px;color:var(--muted)}
 .fld select,.fld input{border:0;background:transparent;font-size:17px;font-weight:700;padding:2px 0;outline:none;width:100%}
@@ -76,13 +76,25 @@ aside{position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);display:flex
 .count{font-size:14px;color:var(--muted);margin:0 0 10px}
 .count b{color:var(--ink);font-size:18px}
 
-/* lowest-by-district strip */
-.strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:12px}
-.strip button{flex:0 0 auto;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 11px;text-align:left;cursor:pointer;min-width:96px}
-.strip button[aria-pressed=true]{border-color:var(--red);box-shadow:inset 0 0 0 1px var(--red)}
-.strip .dn{font-size:13px;font-weight:700}
-.strip .dp{font-size:12px;color:var(--muted)}
-.strip .dp b{color:var(--good)}
+/* district / sub-area picker: nothing loads until a district is chosen */
+.pick{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0 0}
+.pick h3{margin:0 0 6px;font-size:13px;color:var(--muted);font-weight:500}
+.prow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:0 0 6px}
+.prow .rl{font-size:12px;color:var(--muted);width:30px;flex:0 0 auto}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:14px;cursor:pointer;white-space:nowrap}
+.chip .c{color:var(--muted);font-size:12px;margin-left:3px}
+.chip[aria-pressed=true]{border-color:var(--red);background:var(--redsoft);font-weight:700}
+.chip.sm{padding:3px 9px;font-size:13px}
+.chip.clr{border-style:dashed;color:var(--muted)}
+#subWrap{border-top:1px dashed var(--line);margin-top:6px;padding-top:8px}
+
+/* same shop listed by several agencies */
+.same{grid-column:1/-1;border-top:1px dashed var(--line);padding:8px 16px 10px;font-size:13px;background:var(--chip)}
+.same .row{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:4px 0;border-top:1px solid var(--line)}
+.same .row:first-of-type{border-top:0}
+.same .row .r{font-weight:700}
+.same .row a{margin-left:auto;font-size:13px}
+.pill.multi{background:var(--infosoft);color:var(--info);font-weight:700}
 
 /* card */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;display:grid;grid-template-columns:96px 1fr 210px;margin-bottom:10px;overflow:hidden}
@@ -211,8 +223,6 @@ dialog.drawer::backdrop{background:rgba(10,15,20,.45)}
 
 <div class="panel">
   <div class="search" role="search">
-    <div class="fld"><label for="fDist">地區</label>
-      <select id="fDist"></select></div>
     <div class="fld"><label for="fMin">面積 <span id="maxOut" class="num"></span></label>
       <input id="fMin" type="range" min="0" max="2000" step="50" value="0" aria-label="面積下限">
       <input id="fMax" type="range" min="200" max="2000" step="50" value="2000" aria-label="面積上限"></div>
@@ -225,12 +235,16 @@ dialog.drawer::backdrop{background:rgba(10,15,20,.45)}
     <label class="tg on" id="tgNoCk"><input type="checkbox" id="fNoCk" checked> 唔要閣樓舖</label>
     <label class="tg" id="tgFav"><input type="checkbox" id="fFav"> 只睇已收藏</label>
   </div>
+  <div class="pick" role="group" aria-label="揀地區">
+    <h3>揀地區（可以揀多過一個；揀咗先會載入嗰區嘅盤）</h3>
+    <div id="distRows"></div>
+    <div id="subWrap" hidden><h3>細分地區（唔揀＝全部）</h3><div class="prow" id="subRow"></div></div>
+  </div>
 </div>
 
 <div class="wrap">
   <aside>
     <div class="box"><h3>地產</h3><div id="srcBox"></div></div>
-    <div class="box"><h3>區域</h3><div id="regBox"></div></div>
     <div class="box legend">
       <h3>點睇呎租條尺</h3>
       灰色闊條係該區地舖<b>典型呎租範圍</b>，直線係<b>典型值</b>。圓點係呢間舖嘅呎租：
@@ -247,7 +261,6 @@ dialog.drawer::backdrop{background:rgba(10,15,20,.45)}
       <button data-s="vs" aria-pressed="false">對比區內最抵</button>
       <button data-s="new" aria-pressed="false">最新上架</button>
     </div>
-    <div class="strip" id="strip" aria-label="各區最低呎租"></div>
     <p class="count" id="count"></p>
     <div id="list"></div>
   </main>
@@ -264,18 +277,20 @@ dialog.drawer::backdrop{background:rgba(10,15,20,.45)}
 </footer>
 
 <script>
-(function(){
-  var s=document.createElement('script');
-  s.src='data.js?t='+Date.now();
-  s.onload=function(){ start(); };
-  s.onerror=function(){ document.getElementById('list').innerHTML='<div class="empty">讀唔到 data.js。請確認 data.js 同呢個 index.html 放喺同一個資料夾。</div>'; };
-  document.head.appendChild(s);
-})();
+// 一開網頁只載入 data/index.js（各區盤數，好細）；揀咗區先載入嗰區嘅 data/dXX.js
+const VER = Date.now();
+function loadScript(src){
+  return new Promise((ok,fail)=>{const s=document.createElement('script');s.src=src+'?t='+VER;s.onload=ok;s.onerror=fail;document.head.appendChild(s)});
+}
+loadScript('data/index.js').then(start).catch(()=>{
+  document.getElementById('list').innerHTML='<div class="empty">讀唔到 data/index.js。請確認 data 資料夾同呢個 index.html 放喺同一個地方。</div>';
+});
 function start(){
 
-const SD = window.SHOP_DATA || {listings:[],sources:{},updated:""};
-const DATA = SD.listings || [];
-const ASOF = (SD.updated||"").slice(0,10);
+const IDX = window.SHOP_INDEX || {districts:{},sources:{},updated:"",src_counts:{}};
+const DATA = [];            // 已載入嘅盤
+const LOADED = {};          // 區 -> Promise
+const ASOF = (IDX.updated||"").slice(0,10);
 const DAY = 864e5;
 const isNew = x => x.first && (Date.parse(ASOF) - Date.parse(x.first)) <= 3*DAY;
 const isDrop = x => x.prev && x.prev > x.rent && (!x.prev_at || (Date.parse(ASOF) - Date.parse(x.prev_at)) <= 14*DAY);
@@ -284,21 +299,49 @@ const BENCH = {"油尖旺":["kln",75,260,130],"灣仔":["hki",60,200,110],"中�
 const REG = {hki:"港島",kln:"九龍",nt:"新界"};
 const ORDER = Object.keys(BENCH);
 
-const SRCS=[...new Set(DATA.map(x=>x.src))];
-const S = {dist:"全部", min:0, max:2000, budget:0, ground:true, noCk:true, favOnly:false, sort:"psf", src:Object.fromEntries(SRCS.map(s=>[s,true])), reg:{hki:true,kln:true,nt:true}};
+const SRCS=Object.keys(IDX.src_counts||{});
+// dists：揀咗嘅區；subs：揀咗嘅細區（"區|細區"），冇揀＝嗰啲區全部
+const S = {dists:new Set(), subs:new Set(), limit:150, min:0, max:2000, budget:0, ground:true, noCk:true, favOnly:false, sort:"psf", src:Object.fromEntries(SRCS.map(s=>[s,true]))};
 let FAV = {}; // uid -> {st, note}
 
-DATA.forEach(x=>{x.psf=x.rent/x.sq; const b=BENCH[x.d]; x.vs=b? x.psf/b[3] : 1; x.reg=b?b[0]:"nt"; x.ph=x.ph||[]; x.ag=x.ag||"";});
+window.SHOP_PART = (d, rows) => {
+  rows.forEach(x=>{x.psf=x.rent/x.sq; const b=BENCH[x.d]; x.vs=b? x.psf/b[3] : 1; x.ph=x.ph||[]; x.ag=x.ag||""; DATA.push(x)});
+};
+function loadDist(d){
+  const info=IDX.districts[d]; if(!info) return Promise.resolve();
+  return LOADED[d] || (LOADED[d]=loadScript(info.file).catch(()=>{delete LOADED[d]; throw d}));
+}
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const fmt=n=>n.toLocaleString("en-HK");
 const dt=s=>s?s.split("-").reverse().join("/"):"";
 
 // controls
-$("fDist").innerHTML = `<option>全部</option>` + ["hki","kln","nt"].map(r=>`<optgroup label="${REG[r]}">`+ORDER.filter(d=>BENCH[d][0]===r).map(d=>{const n=DATA.filter(x=>x.d===d).length;return `<option value="${d}">${d}${n?"":"（未有盤）"}</option>`}).join("")+`</optgroup>`).join("");
 const bindTg=(cb,lab,key)=>{$(cb).addEventListener("change",e=>{S[key]=e.target.checked;$(lab).classList.toggle("on",e.target.checked);render()})};
 bindTg("fGround","tgGround","ground");bindTg("fNoCk","tgNoCk","noCk");bindTg("fFav","tgFav","favOnly");
-$("fDist").addEventListener("change",e=>{S.dist=e.target.value;render()});
+
+// 揀地區：每區一粒掣（顯示盤數），撳咗先載入嗰區
+function picker(){
+  const D=IDX.districts||{};
+  const rows=["hki","kln","nt"].map(r=>`<div class="prow"><span class="rl">${REG[r]}</span>`+
+    ORDER.filter(d=>BENCH[d][0]===r).map(d=>`<button class="chip" data-d="${d}" aria-pressed="${S.dists.has(d)}" ${D[d]?"":"disabled"}>${d}<span class="c num">${D[d]?D[d].n:0}</span></button>`).join("")+`</div>`);
+  if(D["未分類"]) rows.push(`<div class="prow"><span class="rl">其他</span><button class="chip" data-d="未分類" aria-pressed="${S.dists.has("未分類")}">未分類<span class="c num">${D["未分類"].n}</span></button></div>`);
+  if(S.dists.size) rows.push(`<div class="prow"><button class="chip sm clr" id="clrD">清除已揀地區</button></div>`);
+  $("distRows").innerHTML=rows.join("");
+  $("distRows").querySelectorAll("[data-d]").forEach(b=>b.addEventListener("click",()=>toggleDist(b.dataset.d)));
+  if($("clrD")) $("clrD").onclick=()=>{S.dists.clear();S.subs.clear();picker();render()};
+  // 細分地區：揀咗嘅區入面嘅地方名（例如東區：北角、炮台山、鰂魚涌…）
+  const subs=[...S.dists].flatMap(d=>Object.entries((D[d]||{}).subs||{}).sort((a,b)=>(a[0]==="其他")-(b[0]==="其他")||b[1]-a[1]).map(([a,n])=>[d,a,n]));
+  $("subWrap").hidden=!subs.length;
+  $("subRow").innerHTML=subs.map(([d,a,n])=>`<button class="chip sm" data-sub="${d}|${a}" aria-pressed="${S.subs.has(d+"|"+a)}">${S.dists.size>1?`<span class="c" style="margin:0 3px 0 0">${d}</span>`:""}${a}<span class="c num">${n}</span></button>`).join("");
+  $("subRow").querySelectorAll("[data-sub]").forEach(b=>b.addEventListener("click",()=>{const k=b.dataset.sub;S.subs.has(k)?S.subs.delete(k):S.subs.add(k);picker();render()}));
+}
+function toggleDist(d){
+  if(S.dists.has(d)){S.dists.delete(d);[...S.subs].forEach(k=>{if(k.startsWith(d+"|"))S.subs.delete(k)});picker();render();return}
+  S.dists.add(d);picker();
+  $("count").textContent=`載入緊${d}嘅盤…`;
+  loadDist(d).then(()=>{sideBoxes();render()}).catch(()=>{$("list").innerHTML=`<div class="empty">載入唔到${d}嘅資料，請重新整理網頁再試。</div>`});
+}
 // 面積兩條拉桿：上面下限、下面上限；兩條唔可以交叉
 const sizeLbl=()=>{$("maxOut").textContent=(S.min?fmt(S.min)+"–":"≤ ")+fmt(S.max)+"呎"};
 $("fMin").addEventListener("input",e=>{S.min=Math.min(+e.target.value,S.max);e.target.value=S.min;sizeLbl();render()});
@@ -309,15 +352,17 @@ sizeLbl();
 document.querySelectorAll(".sortbar button").forEach(b=>b.addEventListener("click",()=>{S.sort=b.dataset.s;document.querySelectorAll(".sortbar button").forEach(x=>x.setAttribute("aria-pressed",x===b));render()}));
 
 function sideBoxes(){
-  $("srcBox").innerHTML=Object.keys(S.src).map(s=>`<label class="chk"><input type="checkbox" data-src="${s}" ${S.src[s]?"checked":""}> ${s}<span class="c">${DATA.filter(x=>x.src===s).length} 個盤</span></label>`).join("");
-  $("regBox").innerHTML=["hki","kln","nt"].map(r=>`<label class="chk"><input type="checkbox" data-reg="${r}" ${S.reg[r]?"checked":""}> ${REG[r]}<span class="c">${DATA.filter(x=>x.reg===r).length}</span></label>`).join("");
+  // 揀咗區之前顯示全港盤數；揀咗之後顯示嗰幾區嘅盤數
+  const inSel=x=>S.dists.has(x.d);
+  $("srcBox").innerHTML=Object.keys(S.src).map(s=>`<label class="chk"><input type="checkbox" data-src="${s}" ${S.src[s]?"checked":""}> ${s}<span class="c">${S.dists.size?DATA.filter(x=>x.src===s&&inSel(x)).length:(IDX.src_counts[s]||0)} 個盤</span></label>`).join("");
   document.querySelectorAll("[data-src]").forEach(i=>i.addEventListener("change",e=>{S.src[i.dataset.src]=e.target.checked;render()}));
-  document.querySelectorAll("[data-reg]").forEach(i=>i.addEventListener("change",e=>{S.reg[i.dataset.reg]=e.target.checked;render()}));
 }
 
-function pass(x,ignoreDist){
-  if(!ignoreDist && S.dist!=="全部" && x.d!==S.dist) return false;
-  if(!S.src[x.src]||!S.reg[x.reg]) return false;
+function pass(x){
+  if(!S.dists.has(x.d)) return false;
+  // 嗰區有揀細區先篩；冇揀細區嘅區照顯示全部
+  if([...S.subs].some(k=>k.startsWith(x.d+"|")) && !S.subs.has(x.d+"|"+x.a)) return false;
+  if(!S.src[x.src]) return false;
   if(x.sq>S.max || x.sq<S.min) return false;
   if(S.budget && x.rent>S.budget) return false;
   if(S.ground && x.fl!=="地舖") return false;
@@ -345,9 +390,20 @@ function gauge(x){
     <div class="gcap num"><span>${x.d}典型 $${b[1]}–${b[2]}/呎，中位 ~$${b[3]}</span><span>呢間 $${x.psf.toFixed(0)}</span></div>`;
 }
 
-function card(x){
+// 同一間舖、其他地產嘅叫價（Python 用街名、門牌、大廈名、面積、叫價配對）
+function sameBlock(x,others){
+  if(!others.length) return "";
+  const all=[x,...others].sort((a,b)=>a.rent-b.rent);
+  return `<div class="same"><b>${all.length} 間地產都有放呢間舖</b>，叫價由 $${fmt(all[0].rent)} 至 $${fmt(all[all.length-1].rent)}：`+
+    all.map(o=>`<div class="row"><span class="src s${SRCS.indexOf(o.src)%5}">${o.src}</span>${o.ag?`<span>${esc(o.ag)}</span>`:""}
+      <span class="r num">$${fmt(o.rent)}</span><span class="num">${o.at&&o.at!=="未註明"?o.at+" ":"約 "}${fmt(o.sq)} 呎 · $${o.psf.toFixed(1)}/呎</span>
+      ${o.uid===x.uid?`<span class="pill">呢張卡</span>`:""}<a href="${o.url}" target="_blank" rel="noopener">睇原盤 ↗</a></div>`).join("")+`</div>`;
+}
+
+function card(x,others){
+  others=others||[];
   const [vc,vt]=verdict(x); const f=FAV[x.uid];
-  const pills=[isNew(x)?`<span class="pill r">新盤</span>`:"", isDrop(x)?`<span class="pill g">減價 原$${fmt(x.prev)}</span>`:"", `<span class="pill">${x.fl}</span>`, x.ck?`<span class="pill w">有閣樓</span>`:"", `<span class="pill ${vc}">${vt}</span>`, (x.dt?`<span class="pill">放盤 ${dt(x.dt)}</span>`:`<span class="pill">放盤日期未列明</span>`), `<span class="pill">編號 ${x.id}</span>`].join("");
+  const pills=[others.length?`<span class="pill multi">${others.length+1} 間地產</span>`:"", isNew(x)?`<span class="pill r">新盤</span>`:"", isDrop(x)?`<span class="pill g">減價 原$${fmt(x.prev)}</span>`:"", `<span class="pill">${x.fl}</span>`, x.ck?`<span class="pill w">有閣樓</span>`:"", `<span class="pill ${vc}">${vt}</span>`, (x.dt?`<span class="pill">放盤 ${dt(x.dt)}</span>`:`<span class="pill">放盤日期未列明</span>`), `<span class="pill">編號 ${x.id}</span>`].join("");
   return `<article class="card${f?" fav":""}" data-id="${x.uid}">
     <div class="tag"><div class="dist">${x.d}</div><div class="area">${x.a}</div><span class="src s${SRCS.indexOf(x.src)%5}">${x.src}</span>${x.ag?`<div class="ag">${x.ag}</div>`:""}</div>
     <div class="mid"><h4>${esc(x.a)}${esc(x.st)}</h4>${x.tt?`<div class="tt">${esc(x.tt)}</div>`:""}<div class="meta">${pills}</div>${photos(x)}${gauge(x)}${myAgents(x)}</div>
@@ -359,6 +415,7 @@ function card(x){
     </div>
     <div class="note"><label>進度 <select data-st="${x.uid}">${["想睇","已約睇","已睇","唔啱"].map(o=>`<option ${f&&f.st===o?"selected":""}>${o}</option>`).join("")}</select></label>
       <input data-note="${x.uid}" placeholder="備註，例如：舖面闊、有去水、業主肯減到幾多" value="${f&&f.note?f.note.replace(/"/g,"&quot;"):""}"></div>
+    ${sameBlock(x,others)}
   </article>`;
 }
 
@@ -368,32 +425,42 @@ function photos(x){
   return `<div class="ph">${x.ph.slice(0,2).map(u=>`<img src="${u}" alt="${x.a}${x.st} 相片" loading="lazy" referrerpolicy="no-referrer" onerror="var p=this.parentNode;if(p&&p.parentNode&&p.dataset.fb)p.outerHTML=p.dataset.fb">`).join("")}</div>`.replace('<div class="ph">',`<div class="ph" data-fb='${link.replace(/'/g,"&#39;")}'>`);
 }
 
-function strip(){
-  const by={}; DATA.filter(x=>pass(x,true)).forEach(x=>{(by[x.d]=by[x.d]||[]).push(x)});
-  const ds=ORDER.filter(d=>by[d]);
-  $("strip").innerHTML=`<button aria-pressed="${S.dist==="全部"}" data-d="全部"><div class="dn">全部地區</div><div class="dp">${ds.length} 區有盤</div></button>`+
-   ds.map(d=>{const m=Math.min(...by[d].map(x=>x.psf));return `<button aria-pressed="${S.dist===d}" data-d="${d}"><div class="dn">${d}</div><div class="dp">最平 <b class="num">$${m.toFixed(0)}</b>/呎 · ${by[d].length}間</div></button>`}).join("");
-  $("strip").querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{S.dist=b.dataset.d;$("fDist").value=S.dist;render()}));
-}
-
-function render(){
-  strip();
+function render(keepLimit){
+  if(!keepLimit) S.limit=150;  // 改咗條件就由頭顯示
+  if(!S.dists.size){
+    $("count").textContent="";
+    $("list").innerHTML=`<div class="empty">喺上面揀一個或者多個地區，就會顯示嗰區嘅舖。<br>全港而家有 <b class="num">${fmt(IDX.total||0)}</b> 個在架租盤。</div>`;
+    return;
+  }
+  const waiting=[...S.dists].filter(d=>IDX.districts[d] && !DATA.some(x=>x.d===d));
   let L=DATA.filter(x=>pass(x));
   const k={psf:x=>x.psf,rent:x=>x.rent,vs:x=>x.vs,new:x=>-(Date.parse(x.first||x.dt||"2000-01-01")||0)}[S.sort];
   L.sort((a,b)=>k(a)-k(b));
-  $("count").innerHTML=`搵到 <b class="num">${L.length}</b> 間合條件嘅舖`+(S.dist!=="全部"?`（${S.dist}）`:"");
-  if(!L.length){
-    const none = S.dist!=="全部" && !DATA.some(x=>x.d===S.dist);
-    $("list").innerHTML=`<div class="empty">${none?`呢次未搵到${S.dist}嘅放租盤。可以喺 config.json 加呢區，或者直接去地產網站搜尋。`:"冇舖符合而家嘅條件。試下放寬面積、月租，或者剔走「只睇地舖」／「唔要閣樓舖」。"}</div>`;
+  // 同一間舖只出一張卡：用排最前（最抵）嗰個做主卡，其他地產擺入卡內
+  const byG={}; DATA.forEach(x=>{if(x.g)(byG[x.g]=byG[x.g]||[]).push(x)});
+  const shown=new Set(), cards=[];
+  let merged=0;
+  for(const x of L){
+    if(x.g){ if(shown.has(x.g)){merged++;continue} shown.add(x.g); }
+    cards.push([x, x.g?byG[x.g].filter(o=>o.uid!==x.uid):[]]);
+  }
+  const names=[...S.dists].join("、");
+  $("count").innerHTML=`搵到 <b class="num">${cards.length}</b> 間合條件嘅舖（${esc(names)}）`+(merged?`，合併咗 ${merged} 個唔同地產放緊嘅同一間舖`:"")+(waiting.length?`，${waiting.join("、")}載入緊…`:"");
+  if(!cards.length){
+    $("list").innerHTML=`<div class="empty">${waiting.length?"載入緊…":"冇舖符合而家嘅條件。試下放寬面積、月租、細分地區，或者剔走「只睇地舖」／「唔要閣樓舖」。"}</div>`;
     return;
   }
-  $("list").innerHTML=L.map(card).join("");
+  // 一次過畫幾千張卡會好慢：先畫 150 張，撳「顯示更多」再加
+  const more=cards.length-S.limit;
+  $("list").innerHTML=cards.slice(0,S.limit).map(([x,o])=>card(x,o)).join("")+
+    (more>0?`<button class="btn" id="moreBtn" style="width:100%;padding:12px">顯示多 ${Math.min(more,150)} 間（仲有 ${more} 間）</button>`:"");
+  if($("moreBtn")) $("moreBtn").onclick=()=>{S.limit+=150;render(true)};
   $("list").querySelectorAll("[data-fav]").forEach(b=>b.addEventListener("click",()=>toggleFav(b.dataset.fav)));
   $("list").querySelectorAll("[data-st]").forEach(s=>s.addEventListener("change",()=>{FAV[s.dataset.st].st=s.value;saveFav()}));
   $("list").querySelectorAll("[data-note]").forEach(i=>i.addEventListener("change",()=>{FAV[i.dataset.note].note=i.value;saveFav()}));
 }
 
-function toggleFav(id){ if(FAV[id]) delete FAV[id]; else FAV[id]={st:"想睇",note:""}; saveFav(); render(); }
+function toggleFav(id){ if(FAV[id]) delete FAV[id]; else FAV[id]={st:"想睇",note:""}; saveFav(); render(true); }
 
 // persistence: 每個人自己瀏覽器
 function saveFav(){
@@ -455,9 +522,9 @@ function myAgents(x){
   return `<div class="myag">相熟代理：${L.map(a=>`${esc(a.name)}${a.co?"（"+esc(a.co)+"）":""} ${a.tel?`<a href="tel:${digits(a.tel)}">📞 ${esc(a.tel)}</a>`:""}${waNum(a)?`<a class="w" href="https://wa.me/${waNum(a)}?text=${encodeURIComponent(`你好，我想問${x.a}${x.st}（${x.src} 編號 ${x.id}，月租 $${fmt(x.rent)}）仲有冇，有冇其他類似嘅舖？`)}" target="_blank" rel="noopener">WhatsApp 問呢間</a>`:""}`).join("　")}</div>`;
 }
 
-sideBoxes(); renderAg(); render();
-$("upd").innerHTML=`最後更新 <b>${esc(SD.updated||"—")}</b>　`+Object.entries(SD.sources||{}).map(([k,v])=>`<span class="hs ${v.ok?"ok":"bad"}">${esc(k)} ${v.ok?v.count+" 盤":"未更新（上次成功 "+esc(v.last_ok||"—")+"）"}</span>`).join(" ");
-$("stamp").textContent=`共 ${DATA.length} 個在架租盤（${SRCS.map(s=>s+" "+DATA.filter(x=>x.src===s).length).join("、")}）。「新盤」＝3日內新上架；「減價」＝14日內減過價。有啲盤只有建築面積，卡上有註明。`;
+picker(); sideBoxes(); renderAg(); render();
+$("upd").innerHTML=`最後更新 <b>${esc(IDX.updated||"—")}</b>　`+Object.entries(IDX.sources||{}).map(([k,v])=>`<span class="hs ${v.ok?"ok":"bad"}">${esc(k)} ${v.ok?v.count+" 盤":"未更新（上次成功 "+esc(v.last_ok||"—")+"）"}</span>`).join(" ");
+$("stamp").textContent=`共 ${fmt(IDX.total||0)} 個在架租盤（${SRCS.map(s=>s+" "+fmt(IDX.src_counts[s])).join("、")}），其中 ${IDX.groups||0} 間舖有多過一間地產放緊，網頁會合併做一張卡。「新盤」＝3日內新上架；「減價」＝14日內減過價。有啲盤只有建築面積，卡上有註明。`;
 
 
 
